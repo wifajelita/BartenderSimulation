@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Bartender Sim — Maroon & Beige</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">🍸</span>
+        <div>
+          <h1>Bartender Sim</h1>
+          <p class="tagline">Craft. Serve. Shine.</p>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-label">Uang</span>
+          <span class="stat-value" id="money">$0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Skor</span>
+          <span class="stat-value" id="score">0</span>
+        </div>
+        <div class="stat" id="p2Stat" style="display:none;">
+          <span class="stat-label">P2 Skor</span>
+          <span class="stat-value" id="score2">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Hari</span>
+          <span class="stat-value" id="day">1</span>
+        </div>
+        <div class="stat timer-stat">
+          <span class="stat-label">Waktu</span>
+          <span class="stat-value" id="timer">60</span>
+        </div>
+      </div>
+      <div class="audio-controls">
+        <button class="btn-icon" id="btnMute" title="Mute / Unmute">🔊</button>
+        <button class="btn-icon" id="btnBgm" title="Backsound On/Off">🎵</button>
+      </div>
+    </header>
+
+    <!-- MAIN GAME AREA -->
+    <main class="main">
+      <!-- LEFT: CUSTOMER + ORDER -->
+      <section class="panel customer-panel">
+        <div class="panel-header">Pelanggan <span id="turnIndicator"></span></div>
+        <div class="customer-area">
+          <div class="customer-avatar-wrap">
+            <img class="customer-avatar" id="customerAvatar" src="customers/leo.jpg" alt="Pelanggan" />
+          </div>
+          <div class="customer-name" id="customerName">—</div>
+          <div class="customer-mood" id="customerMood">Senang</div>
+          <div class="order-box">
+            <div class="order-label">Pesanan</div>
+            <div class="order-name" id="orderName">Tunggu pelanggan...</div>
+            <div class="order-hint" id="orderHint"></div>
+          </div>
+          <div class="patience-bar">
+            <div class="patience-fill" id="patienceBar"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CENTER: MIXING STATION -->
+      <section class="panel mixing-panel">
+        <div class="panel-header">Stasiun Mixing</div>
+        
+        <div class="glass-area">
+          <div class="glass-selector" id="glassSelector">
+            <button class="glass-type active" data-type="highball" title="Highball">🥃</button>
+            <button class="glass-type" data-type="collins" title="Collins">🥤</button>
+            <button class="glass-type" data-type="rocks" title="Rocks">🥃</button>
+            <button class="glass-type" data-type="oldfashioned" title="Old Fashioned">🥃</button>
+            <button class="glass-type" data-type="shot" title="Shot">🥛</button>
+            <button class="glass-type" data-type="martini" title="Martini">🍸</button>
+            <button class="glass-type" data-type="wine" title="Wine">🍷</button>
+          </div>
+          <div class="glass-stage">
+            <div class="glass glass-highball" id="glass">
+              <div class="liquid" id="liquid"></div>
+              <div class="glass-shine"></div>
+              <div class="ice-cubes" id="iceCubes"></div>
+              <div class="garnish" id="garnish"></div>
+            </div>
+          </div>
+          <div class="glass-label" id="glassLabel">Highball Glass · kosong</div>
+        </div>
+
+        <div class="current-mix" id="currentMix">
+          <span class="mix-empty">Belum ada bahan</span>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-secondary" id="btnShake" disabled>
+            <span>🌪️</span> Kocok
+          </button>
+          <button class="btn btn-secondary" id="btnStir" disabled>
+            <span>🥄</span> Aduk
+          </button>
+          <button class="btn btn-secondary" id="btnClear">
+            <span>🗑️</span> Buang
+          </button>
+          <button class="btn btn-primary" id="btnServe" disabled>
+            <span>🥂</span> Sajikan
+          </button>
+        </div>
+      </section>
+
+      <!-- RIGHT: INGREDIENTS -->
+      <section class="panel ingredients-panel">
+        <div class="panel-header">Bahan-bahan</div>
+        <div class="ingredients-grid" id="ingredientsGrid"></div>
+      </section>
+    </main>
+
+    <!-- BOTTOM BAR -->
+    <footer class="footer">
+      <div class="recipe-book">
+        <button class="btn btn-ghost" id="btnRecipes">📖 Buku Resep</button>
+      </div>
+      <div class="message" id="message">Siapkan bar-mu dan tunggu pelanggan pertama!</div>
+    </footer>
+
+    <!-- MODALS -->
+    <div class="modal-overlay" id="recipeModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>📖 Buku Resep</h2>
+          <button class="btn-close" id="closeRecipe">×</button>
+        </div>
+        <div class="modal-body" id="recipeList"></div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="resultModal">
+      <div class="modal result-modal">
+        <div class="result-icon" id="resultIcon">🎉</div>
+        <h2 id="resultTitle">Bagus!</h2>
+        <p id="resultText">Kamu mendapatkan tip yang bagus.</p>
+        <div class="result-reward" id="resultReward">+$25</div>
+        <button class="btn btn-primary" id="btnContinue">Lanjut</button>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="dayEndModal">
+      <div class="modal">
+        <h2>🌙 Hari Selesai</h2>
+        <p id="daySummary">Kerja bagus hari ini!</p>
+        <div class="day-stats">
+          <div>Pelanggan dilayani: <strong id="servedCount">0</strong></div>
+          <div>Pendapatan hari ini: <strong id="dayEarning">$0</strong></div>
+          <div id="multiResult" style="display:none; margin-top:12px;"></div>
+        </div>
+        <button class="btn btn-primary" id="btnNextDay">Mulai Hari Berikutnya</button>
+      </div>
+    </div>
+
+    <div class="modal-overlay active" id="startModal">
+      <div class="modal start-modal">
+        <div class="start-logo">🍸</div>
+        <h1>Bartender Sim</h1>
+        <p class="start-desc">Jadi bartender andalan bar ini. Buat minuman sesuai pesanan pelanggan, kumpulkan tip, dan naik level!</p>
+        
+        <div class="mode-select">
+          <label class="mode-option">
+            <input type="radio" name="mode" value="solo" checked>
+            <span>🧍 Solo</span>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="mode" value="versus">
+            <span>👥 2 Player (Lokal)</span>
+          </label>
+        </div>
+
+        <div class="start-tips">
+          <div>✨ Pilih bahan sesuai resep</div>
+          <div>🌪️ Kocok atau aduk sesuai kebutuhan</div>
+          <div>⏱️ Jangan biarkan pelanggan menunggu terlalu lama</div>
+          <div>🔊 Sound & backsound ambient bar tersedia</div>
+        </div>
+        <button class="btn btn-primary btn-large" id="btnStart">Mulai Bekerja</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
