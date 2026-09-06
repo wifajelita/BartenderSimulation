@@ -15,11 +15,11 @@ class AudioManager {
     if (this.ctx) return;
     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
     this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.value = 0.7;
+    this.masterGain.gain.value = 0.75;
     this.masterGain.connect(this.ctx.destination);
 
     this.sfxGain = this.ctx.createGain();
-    this.sfxGain.gain.value = 0.85;
+    this.sfxGain.gain.value = 1.0;
     this.sfxGain.connect(this.masterGain);
 
     this.bgmGain = this.ctx.createGain();
@@ -37,7 +37,7 @@ class AudioManager {
   setMuted(m) {
     this.muted = m;
     if (this.masterGain) {
-      this.masterGain.gain.setTargetAtTime(m ? 0 : 0.7, this.ctx.currentTime, 0.05);
+      this.masterGain.gain.setTargetAtTime(m ? 0 : 0.75, this.ctx.currentTime, 0.05);
     }
   }
 
@@ -220,6 +220,12 @@ class AudioManager {
   }
 }
 
+
+// Real BGM track (HTML5 Audio)
+const bgmAudio = new Audio('bgm.mp3');
+bgmAudio.loop = true;
+bgmAudio.volume = 0.28; // soft, so SFX stay clearer
+
 const audio = new AudioManager();
 
 // ========== DATA ==========
@@ -293,6 +299,7 @@ const state = {
   currentPlayer: 1, // 1 or 2
   selectedGlass: 'highball',
   isPaused: false,
+  recipePaused: false,
 };
 
 // ========== DOM ==========
@@ -313,7 +320,7 @@ const els = {
   dayEndModal: $('#dayEndModal'), daySummary: $('#daySummary'), servedCount: $('#servedCount'),
   dayEarning: $('#dayEarning'), multiResult: $('#multiResult'), btnNextDay: $('#btnNextDay'),
   startModal: $('#startModal'), btnStart: $('#btnStart'),
-  btnMute: $('#btnMute'), btnBgm: $('#btnBgm'), turnIndicator: $('#turnIndicator'),
+  btnMute: $('#btnMute'), btnBgm: $('#btnBgm'), btnPause: $('#btnPause'), turnIndicator: $('#turnIndicator'),
   glassSelector: $('#glassSelector'),
 };
 
@@ -335,8 +342,11 @@ function renderIngredients() {
 
 function renderRecipes() {
   els.recipeList.innerHTML = RECIPES.map(r => {
-    const ingNames = r.ingredients.map(id => INGREDIENTS.find(i => i.id === id)?.name || id).join(', ');
-    return `<div class="recipe-card"><h3>${r.name}</h3><div class="ingredients">${ingNames}</div><div class="method">${r.method === 'shake' ? '🌪️ Kocok' : '🥄 Aduk'}</div></div>`;
+    const ingNames = r.ingredients.map((id, i) => {
+      const name = INGREDIENTS.find(x => x.id === id)?.name || id;
+      return `${i + 1}. ${name}`;
+    }).join('<br>');
+    return `<div class="recipe-card"><h3>${r.name}</h3><div class="ingredients">${ingNames}</div><div class="method">${r.method === 'shake' ? '🌪️ Kocok' : '🥄 Aduk'} · Urutan wajib berurutan!</div></div>`;
   }).join('');
 }
 
@@ -344,22 +354,37 @@ function bindEvents() {
   els.btnStart.addEventListener('click', () => {
     audio.init();
     audio.resume();
-    audio.startBgm();
+    // Real jazz track
+    bgmAudio.currentTime = 0;
+    bgmAudio.volume = 0.28;
+    bgmAudio.play().catch(() => {});
+    audio.startBgm(); // keep soft ambient layer very quiet or skip
     startGame();
   });
   els.btnRecipes.addEventListener('click', () => {
     audio.click();
     els.recipeModal.classList.add('active');
-    pauseGame();
+    if (!state.isPaused) {
+      state.recipePaused = true;
+      pauseGame();
+    }
   });
   els.closeRecipe.addEventListener('click', () => {
     els.recipeModal.classList.remove('active');
-    resumeGame();
+    if (state.recipePaused) {
+      state.recipePaused = false;
+      resumeGame();
+      if (els.btnPause) { els.btnPause.textContent = '⏸️'; els.btnPause.classList.remove('off'); }
+    }
   });
   els.recipeModal.addEventListener('click', e => {
     if (e.target === els.recipeModal) {
       els.recipeModal.classList.remove('active');
-      resumeGame();
+      if (state.recipePaused) {
+        state.recipePaused = false;
+        resumeGame();
+        if (els.btnPause) { els.btnPause.textContent = '⏸️'; els.btnPause.classList.remove('off'); }
+      }
     }
   });
 
@@ -374,10 +399,19 @@ function bindEvents() {
     audio.setMuted(!audio.muted);
     els.btnMute.textContent = audio.muted ? '🔇' : '🔊';
     els.btnMute.classList.toggle('off', audio.muted);
+    bgmAudio.muted = audio.muted;
   });
   els.btnBgm.addEventListener('click', () => {
-    audio.setBgm(!audio.bgmOn);
-    els.btnBgm.classList.toggle('off', !audio.bgmOn);
+    audio.bgmOn = !audio.bgmOn;
+    if (audio.bgmOn) {
+      bgmAudio.volume = 0.28;
+      bgmAudio.play().catch(() => {});
+      els.btnBgm.classList.remove('off');
+    } else {
+      bgmAudio.pause();
+      els.btnBgm.classList.add('off');
+    }
+    audio.setBgm(false); // keep synth quiet; real track is main
   });
 
   
@@ -389,6 +423,26 @@ function bindEvents() {
       const type = btn.dataset.type;
       setGlassType(type);
       audio.click();
+    });
+  }
+
+  
+  // Manual Pause / Resume
+  if (els.btnPause) {
+    els.btnPause.addEventListener('click', () => {
+      if (!state.isPlaying) return;
+      audio.click();
+      if (state.isPaused) {
+        resumeGame();
+        els.btnPause.textContent = '⏸️';
+        els.btnPause.classList.remove('off');
+        if (audio.bgmOn && !audio.muted) bgmAudio.play().catch(() => {});
+      } else {
+        pauseGame();
+        els.btnPause.textContent = '▶️';
+        els.btnPause.classList.add('off');
+        bgmAudio.pause();
+      }
     });
   }
 
@@ -590,11 +644,47 @@ els.customerAvatar.alt = customer.name;
 
 // ========== MIXING ==========
 function addIngredient(id) {
+  if (!state.currentOrder || !state.isPlaying || state.isPaused) return;
   if (state.selectedIngredients.includes(id)) return;
   if (state.selectedIngredients.length >= 8) {
     setMessage('Gelas sudah penuh!');
     return;
   }
+
+  // Tantangan: harus sesuai URUTAN resep
+  const required = state.currentOrder.ingredients;
+  const nextIndex = state.selectedIngredients.length;
+  const expectedId = required[nextIndex];
+
+  // Kalau bahan yang dipilih bukan yang diharapkan di urutan ini → auto buang
+  if (expectedId && id !== expectedId) {
+    audio.fail();
+    setMessage(`❌ Salah urutan! Seharusnya: ${ingredientName(expectedId)}. Gelas dibuang!`);
+    // sedikit delay biar user sempat lihat
+    state.selectedIngredients.push(id);
+    updateMixDisplay();
+    updateGlassVisual();
+    setTimeout(() => {
+      clearGlass();
+      setMessage(`Coba lagi — ikut urutan resep ya! (lihat Buku Resep)`);
+    }, 650);
+    return;
+  }
+
+  // Kalau sudah lebih dari jumlah resep (extra bahan) juga gagal
+  if (nextIndex >= required.length) {
+    audio.fail();
+    setMessage('❌ Kelebihan bahan! Gelas dibuang!');
+    state.selectedIngredients.push(id);
+    updateMixDisplay();
+    updateGlassVisual();
+    setTimeout(() => {
+      clearGlass();
+      setMessage('Ikuti jumlah & urutan bahan di resep.');
+    }, 650);
+    return;
+  }
+
   state.selectedIngredients.push(id);
   audio.pour();
   updateMixDisplay();
@@ -606,6 +696,16 @@ function addIngredient(id) {
     btn.classList.add('selected');
     setTimeout(() => btn.classList.remove('selected'), 300);
   }
+
+  // Feedback positif kecil
+  if (state.selectedIngredients.length === required.length) {
+    setMessage('✨ Bahan lengkap! Sekarang Kocok atau Aduk sesuai resep.');
+  }
+}
+
+function ingredientName(id) {
+  const ing = INGREDIENTS.find(i => i.id === id);
+  return ing ? ing.name : id;
 }
 
 function updateMixDisplay() {

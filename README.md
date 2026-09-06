@@ -1,4 +1,4 @@
-# Bartender Sim 🍸
+# Bartender Simulation 🍸
 
 Game simulasi bartender berbasis web dengan tema **Maroon & Beige**.
 

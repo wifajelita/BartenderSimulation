@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Bartender Sim — Maroon & Beige</title>
+  <title>Bartender Simulation — Maroon & Beige</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
       <div class="logo">
         <span class="logo-icon">🍸</span>
         <div>
-          <h1>Bartender Sim</h1>
+          <h1>Bartender Simulation</h1>
           <p class="tagline">Craft. Serve. Shine.</p>
         </div>
       </div>
@@ -43,6 +43,7 @@
         </div>
       </div>
       <div class="audio-controls">
+        <button class="btn-icon" id="btnPause" title="Pause / Resume">⏸️</button>
         <button class="btn-icon" id="btnMute" title="Mute / Unmute">🔊</button>
         <button class="btn-icon" id="btnBgm" title="Backsound On/Off">🎵</button>
       </div>
@@ -167,7 +168,7 @@
     <div class="modal-overlay active" id="startModal">
       <div class="modal start-modal">
         <div class="start-logo">🍸</div>
-        <h1>Bartender Sim</h1>
+        <h1>Bartender Simulation</h1>
         <p class="start-desc">Jadi bartender andalan bar ini. Buat minuman sesuai pesanan pelanggan, kumpulkan tip, dan naik level!</p>
         
         <div class="mode-select">
@@ -182,10 +183,10 @@
         </div>
 
         <div class="start-tips">
-          <div>✨ Pilih bahan sesuai resep</div>
+          <div>✨ Masukkan bahan sesuai URUTAN resep</div>
+          <div>⚠️ Salah urutan = gelas otomatis dibuang</div>
           <div>🌪️ Kocok atau aduk sesuai kebutuhan</div>
           <div>⏱️ Jangan biarkan pelanggan menunggu terlalu lama</div>
-          <div>🔊 Sound & backsound ambient bar tersedia</div>
         </div>
         <button class="btn btn-primary btn-large" id="btnStart">Mulai Bekerja</button>
       </div>
