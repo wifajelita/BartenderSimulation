@@ -1134,3 +1134,53 @@ body::before {
   .glass-wine { width: 70px; height: 85px; }
   .glass-shot { width: 42px; height: 55px; }
 }
+
+/* ===== Accessibility & Performance improvements ===== */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #5C1A1B;
+  color: #fff;
+  padding: 8px 16px;
+  z-index: 10000;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+  font-weight: 600;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+button:focus-visible,
+a:focus-visible,
+.glass-type:focus-visible,
+.btn:focus-visible,
+.btn-icon:focus-visible,
+.mode-option:focus-within {
+  outline: 3px solid #C9A227;
+  outline-offset: 2px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Improve contrast for light text on dark overlays if needed */
+.stat-label,
+.tagline,
+.order-hint {
+  color: #4a3030;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <!-- Primary SEO -->
   <title>Bartender Simulation — Game Simulasi Bartender Online Gratis | Maroon & Beige</title>
@@ -73,13 +73,16 @@
   </script>
 
   <link rel="stylesheet" href="https://silverhawk.web.id/lock/lock.css">
+  <link rel="preload" href="styles.css" as="style" />
   <link rel="stylesheet" href="styles.css" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
 </head>
 <body data-shlock-mode="ultimate" data-shlock-domain="" data-shlock-brand="BartenderSimulation" data-shlock-social="https://www.tiktok.com/@ipsy.sav/video/7188914243008269573?q=Bartender%20edit%20peligrosa&t=1788836089935">
-  <div id="app">
+  <a class="skip-link" href="#app">Loncat ke konten utama</a>
+  <div id="app" role="main">
     <!-- HEADER -->
     <header class="header">
       <div class="logo">
@@ -112,9 +115,9 @@
         </div>
       </div>
       <div class="audio-controls">
-        <button class="btn-icon" id="btnPause" title="Pause / Resume">⏸️</button>
-        <button class="btn-icon" id="btnMute" title="Mute / Unmute">🔊</button>
-        <button class="btn-icon" id="btnBgm" title="Backsound On/Off">🎵</button>
+        <button class="btn-icon" id="btnPause" title="Pause / Resume" aria-label="Jeda atau lanjutkan permainan">⏸️</button>
+        <button class="btn-icon" id="btnMute" title="Mute / Unmute" aria-label="Bisukan atau nyalakan suara">🔊</button>
+        <button class="btn-icon" id="btnBgm" title="Backsound On/Off" aria-label="Nyalakan atau matikan musik latar">🎵</button>
       </div>
     </header>
 
@@ -125,7 +128,7 @@
         <div class="panel-header">Pelanggan <span id="turnIndicator"></span></div>
         <div class="customer-area">
           <div class="customer-avatar-wrap">
-            <img class="customer-avatar" id="customerAvatar" src="customers/leo.jpg" alt="Pelanggan" />
+            <img class="customer-avatar" id="customerAvatar" src="customers/leo.jpg" alt="Foto pelanggan saat ini" width="120" height="120" loading="lazy" decoding="async" />
           </div>
           <div class="customer-name" id="customerName">—</div>
           <div class="customer-mood" id="customerMood">Senang</div>
@@ -146,13 +149,13 @@
         
         <div class="glass-area">
           <div class="glass-selector" id="glassSelector">
-            <button class="glass-type active" data-type="highball" title="Highball">🥃</button>
-            <button class="glass-type" data-type="collins" title="Collins">🥤</button>
-            <button class="glass-type" data-type="rocks" title="Rocks">🥃</button>
-            <button class="glass-type" data-type="oldfashioned" title="Old Fashioned">🥃</button>
-            <button class="glass-type" data-type="shot" title="Shot">🥛</button>
-            <button class="glass-type" data-type="martini" title="Martini">🍸</button>
-            <button class="glass-type" data-type="wine" title="Wine">🍷</button>
+            <button class="glass-type active" data-type="highball" title="Highball" aria-label="Pilih gelas Highball">🥃</button>
+            <button class="glass-type" data-type="collins" title="Collins" aria-label="Pilih gelas Collins">🥤</button>
+            <button class="glass-type" data-type="rocks" title="Rocks" aria-label="Pilih gelas Rocks">🥃</button>
+            <button class="glass-type" data-type="oldfashioned" title="Old Fashioned" aria-label="Pilih gelas Old Fashioned">🥃</button>
+            <button class="glass-type" data-type="shot" title="Shot" aria-label="Pilih gelas Shot">🥛</button>
+            <button class="glass-type" data-type="martini" title="Martini" aria-label="Pilih gelas Martini">🍸</button>
+            <button class="glass-type" data-type="wine" title="Wine" aria-label="Pilih gelas Wine">🍷</button>
           </div>
           <div class="glass-stage">
             <div class="glass glass-highball" id="glass">
@@ -170,17 +173,17 @@
         </div>
 
         <div class="actions">
-          <button class="btn btn-secondary" id="btnShake" disabled>
-            <span>🌪️</span> Kocok
+          <button class="btn btn-secondary" id="btnShake" disabled aria-label="Kocok minuman">
+            <span aria-hidden="true">🌪️</span> Kocok
           </button>
-          <button class="btn btn-secondary" id="btnStir" disabled>
-            <span>🥄</span> Aduk
+          <button class="btn btn-secondary" id="btnStir" disabled aria-label="Aduk minuman">
+            <span aria-hidden="true">🥄</span> Aduk
           </button>
-          <button class="btn btn-secondary" id="btnClear">
-            <span>🗑️</span> Buang
+          <button class="btn btn-secondary" id="btnClear" aria-label="Buang isi gelas">
+            <span aria-hidden="true">🗑️</span> Buang
           </button>
-          <button class="btn btn-primary" id="btnServe" disabled>
-            <span>🥂</span> Sajikan
+          <button class="btn btn-primary" id="btnServe" disabled aria-label="Sajikan minuman kepada pelanggan">
+            <span aria-hidden="true">🥂</span> Sajikan
           </button>
         </div>
       </section>
@@ -195,7 +198,7 @@
     <!-- BOTTOM BAR -->
     <footer class="footer">
       <div class="recipe-book">
-        <button class="btn btn-ghost" id="btnRecipes">📖 Buku Resep</button>
+        <button class="btn btn-ghost" id="btnRecipes" aria-label="Buka buku resep">📖 Buku Resep</button>
       </div>
       <div class="message" id="message">Siapkan bar-mu dan tunggu pelanggan pertama!</div>
     </footer>
@@ -262,7 +265,7 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
-  <script src="https://silverhawk.web.id/lock/lock.js"></script>
+  <script src="script.js" defer></script>
+  <script src="https://silverhawk.web.id/lock/lock.js" defer></script>
 </body>
 </html>
